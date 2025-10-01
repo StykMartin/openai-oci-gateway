@@ -5,19 +5,20 @@ import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.authentication.provider.AuthenticationProvider;
 import jakarta.inject.Singleton;
-
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Singleton
-public class OpenAiApiKeyAuthenticationProvider implements AuthenticationProvider<HttpRequest<?>, String, String> {
+public class OpenAiApiKeyAuthenticationProvider
+        implements AuthenticationProvider<HttpRequest<?>, String, String> {
     private static final Pattern API_KEY_PATTERN = Pattern.compile("^sk-[a-zA-Z0-9]{48}$");
 
-    public OpenAiApiKeyAuthenticationProvider() {
-    }
+    public OpenAiApiKeyAuthenticationProvider() {}
 
     @Override
-    public AuthenticationResponse authenticate(HttpRequest<?> httpRequest, AuthenticationRequest<String, String> authenticationRequest) {
+    public AuthenticationResponse authenticate(
+            HttpRequest<?> httpRequest,
+            AuthenticationRequest<String, String> authenticationRequest) {
         String apiKey = extractApiKey(httpRequest);
 
         if (!isValidApiKeyFormat(apiKey)) {
@@ -26,28 +27,28 @@ public class OpenAiApiKeyAuthenticationProvider implements AuthenticationProvide
 
         String organization = extractOrganization(httpRequest);
         String project = extractProject(httpRequest);
-        
-        Map<String, Object> attributes = Map.of(
-            "apiKey", apiKey,
-            "organization", organization,
-            "project", project,
-            "authType", "api-key"
-        );
-        
+
+        Map<String, Object> attributes =
+                Map.of(
+                        "apiKey", apiKey,
+                        "organization", organization,
+                        "project", project,
+                        "authType", "api-key");
+
         return AuthenticationResponse.success("api-user", attributes);
     }
 
     private String extractApiKey(HttpRequest<?> httpRequest) {
         String authHeader = httpRequest.getHeaders().get("Authorization");
-        
+
         if (authHeader == null || authHeader.isEmpty()) {
             return null;
         }
-        
+
         if (!authHeader.startsWith("Bearer ")) {
             return null;
         }
-        
+
         return authHeader.substring(7).trim();
     }
 
@@ -65,16 +66,15 @@ public class OpenAiApiKeyAuthenticationProvider implements AuthenticationProvide
         if (apiKey == null || apiKey.isEmpty()) {
             return false;
         }
-        
+
         if (!apiKey.startsWith("sk-")) {
             return false;
         }
-        
+
         if (apiKey.length() != 51) {
             return false;
         }
-        
+
         return API_KEY_PATTERN.matcher(apiKey).matches();
     }
 }
-

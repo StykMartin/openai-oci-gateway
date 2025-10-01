@@ -2,6 +2,7 @@ plugins {
     id("io.micronaut.application") version "4.5.5"
     id("com.gradleup.shadow") version "8.3.9"
     id("io.micronaut.aot") version "4.5.5"
+    id("com.diffplug.spotless") version "8.0.0"
 }
 
 version = "0.1"
@@ -35,7 +36,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-
 application {
     mainClass = "io.martinstyk.Application"
 }
@@ -43,7 +43,6 @@ java {
     sourceCompatibility = JavaVersion.toVersion("21")
     targetCompatibility = JavaVersion.toVersion("21")
 }
-
 
 graalvmNative.toolchainDetection = false
 
@@ -68,9 +67,28 @@ micronaut {
     }
 }
 
-
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "21"
 }
 
+spotless {
+    java {
+        target("src/**/*.java")
 
+        googleJavaFormat().aosp()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint()
+    }
+
+    format("misc") {
+        target("*.md", ".gitignore")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

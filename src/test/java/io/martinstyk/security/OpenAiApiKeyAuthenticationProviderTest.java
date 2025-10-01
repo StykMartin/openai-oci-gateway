@@ -1,12 +1,15 @@
 package io.martinstyk.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-import static org.junit.jupiter.api.Assertions.*;
 
 class OpenAiApiKeyAuthenticationProviderTest {
 
@@ -20,14 +23,15 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testValidApiKeyAuthentication() {
         String validApiKey = "sk-123456789012345678901234567890123456789012345678";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer " + validApiKey)
-                .header("OpenAI-Organization", "org-test")
-                .header("OpenAI-Project", "proj-test");
+
+        HttpRequest<?> request =
+                HttpRequest.GET("/test")
+                        .header("Authorization", "Bearer " + validApiKey)
+                        .header("OpenAI-Organization", "org-test")
+                        .header("OpenAI-Project", "proj-test");
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
         assertTrue(result.getAuthentication().isPresent());
@@ -37,12 +41,12 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testInvalidApiKeyFormat() {
         String invalidApiKey = "invalid-key";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer " + invalidApiKey);
+
+        HttpRequest<?> request =
+                HttpRequest.GET("/test").header("Authorization", "Bearer " + invalidApiKey);
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
     }
@@ -52,7 +56,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test");
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
     }
@@ -60,12 +64,11 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testInvalidBearerFormat() {
         String validApiKey = "sk-123456789012345678901234567890123456789012345678";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", validApiKey);
+
+        HttpRequest<?> request = HttpRequest.GET("/test").header("Authorization", validApiKey);
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
     }
@@ -73,7 +76,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testApiKeyFormatValidation() {
         assertTrue(isValidApiKeyFormat("sk-123456789012345678901234567890123456789012345678"));
-        
+
         assertFalse(isValidApiKeyFormat("sk-123"));
         assertFalse(isValidApiKeyFormat("sk-1234567890123456789012345678901234567890123456789"));
         assertFalse(isValidApiKeyFormat("pk-123456789012345678901234567890123456789012345678"));
@@ -83,18 +86,19 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testOrganizationAndProjectExtraction() {
         String validApiKey = "sk-123456789012345678901234567890123456789012345678";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer " + validApiKey)
-                .header("OpenAI-Organization", "org-custom")
-                .header("OpenAI-Project", "proj-custom");
+
+        HttpRequest<?> request =
+                HttpRequest.GET("/test")
+                        .header("Authorization", "Bearer " + validApiKey)
+                        .header("OpenAI-Organization", "org-custom")
+                        .header("OpenAI-Project", "proj-custom");
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
         assertTrue(result.getAuthentication().isPresent());
-        
+
         Map<String, Object> attributes = result.getAuthentication().get().getAttributes();
         assertEquals("org-custom", attributes.get("organization"));
         assertEquals("proj-custom", attributes.get("project"));
@@ -103,16 +107,16 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testDefaultOrganizationAndProject() {
         String validApiKey = "sk-123456789012345678901234567890123456789012345678";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer " + validApiKey);
+
+        HttpRequest<?> request =
+                HttpRequest.GET("/test").header("Authorization", "Bearer " + validApiKey);
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
         assertTrue(result.getAuthentication().isPresent());
-        
+
         Map<String, Object> attributes = result.getAuthentication().get().getAttributes();
         assertEquals("org-default", attributes.get("organization"));
         assertEquals("proj-default", attributes.get("project"));
@@ -121,18 +125,19 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testAuthenticationAttributes() {
         String validApiKey = "sk-123456789012345678901234567890123456789012345678";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer " + validApiKey)
-                .header("OpenAI-Organization", "test-org")
-                .header("OpenAI-Project", "test-proj");
+
+        HttpRequest<?> request =
+                HttpRequest.GET("/test")
+                        .header("Authorization", "Bearer " + validApiKey)
+                        .header("OpenAI-Organization", "test-org")
+                        .header("OpenAI-Project", "test-proj");
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
         assertTrue(result.getAuthentication().isPresent());
-        
+
         Map<String, Object> attributes = result.getAuthentication().get().getAttributes();
         assertEquals(validApiKey, attributes.get("apiKey"));
         assertEquals("test-org", attributes.get("organization"));
@@ -142,11 +147,10 @@ class OpenAiApiKeyAuthenticationProviderTest {
 
     @Test
     void testEmptyBearerToken() {
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer ");
+        HttpRequest<?> request = HttpRequest.GET("/test").header("Authorization", "Bearer ");
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
     }
@@ -154,12 +158,12 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testApiKeyTooShort() {
         String tooShortApiKey = "sk-12345678901234567890123456789012345678901234567";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer " + tooShortApiKey);
+
+        HttpRequest<?> request =
+                HttpRequest.GET("/test").header("Authorization", "Bearer " + tooShortApiKey);
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
     }
@@ -167,23 +171,22 @@ class OpenAiApiKeyAuthenticationProviderTest {
     @Test
     void testApiKeyTooLong() {
         String tooLongApiKey = "sk-1234567890123456789012345678901234567890123456789";
-        
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer " + tooLongApiKey);
+
+        HttpRequest<?> request =
+                HttpRequest.GET("/test").header("Authorization", "Bearer " + tooLongApiKey);
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
     }
 
     @Test
     void testWhitespaceOnlyBearerToken() {
-        HttpRequest<?> request = HttpRequest.GET("/test")
-                .header("Authorization", "Bearer   ");
+        HttpRequest<?> request = HttpRequest.GET("/test").header("Authorization", "Bearer   ");
 
         AuthenticationResponse result = authProvider.authenticate(request, null);
-        
+
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
     }
@@ -192,17 +195,16 @@ class OpenAiApiKeyAuthenticationProviderTest {
         if (apiKey == null || apiKey.isEmpty()) {
             return false;
         }
-        
+
         if (!apiKey.startsWith("sk-")) {
             return false;
         }
-        
+
         if (apiKey.length() != 51) {
             return false;
         }
-        
+
         String keyPart = apiKey.substring(3);
         return keyPart.matches("[a-zA-Z0-9]+");
     }
 }
-

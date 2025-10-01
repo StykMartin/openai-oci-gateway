@@ -14,12 +14,17 @@ repositories {
 dependencies {
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    annotationProcessor("io.micronaut.security:micronaut-security-annotations")
 
     implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-sdk")
     implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-oke-workload-identity")
     implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-httpclient-netty")
 
     implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.micronaut.security:micronaut-security")
+    implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.validation:micronaut-validation")
+    implementation("io.projectreactor:reactor-core")
     compileOnly("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")
     testImplementation("io.micronaut:micronaut-http-client")

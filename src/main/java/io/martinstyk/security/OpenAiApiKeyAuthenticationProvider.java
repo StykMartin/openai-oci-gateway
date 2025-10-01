@@ -5,23 +5,19 @@ import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.authentication.provider.AuthenticationProvider;
 import jakarta.inject.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.regex.Pattern;
 
 @Singleton
-public class OpenAiApiKeyAuthenticationProvider implements AuthenticationProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenAiApiKeyAuthenticationProvider.class);
-    
+public class OpenAiApiKeyAuthenticationProvider implements AuthenticationProvider<HttpRequest<?>, String, String> {
     private static final Pattern API_KEY_PATTERN = Pattern.compile("^sk-[a-zA-Z0-9]{48}$");
 
     public OpenAiApiKeyAuthenticationProvider() {
     }
 
-    public AuthenticationResponse authenticate(HttpRequest<?> httpRequest, 
-                                               AuthenticationRequest<?, ?> authenticationRequest) {
+    @Override
+    public AuthenticationResponse authenticate(HttpRequest<?> httpRequest, AuthenticationRequest<String, String> authenticationRequest) {
         String apiKey = extractApiKey(httpRequest);
 
         if (!isValidApiKeyFormat(apiKey)) {
@@ -79,14 +75,6 @@ public class OpenAiApiKeyAuthenticationProvider implements AuthenticationProvide
         }
         
         return API_KEY_PATTERN.matcher(apiKey).matches();
-    }
-
-    @Override
-    public AuthenticationResponse authenticate(Object httpRequest, AuthenticationRequest authenticationRequest) {
-        if (httpRequest instanceof HttpRequest<?>) {
-            return authenticate((HttpRequest<?>) httpRequest, authenticationRequest);
-        }
-        return AuthenticationResponse.failure("Invalid request type");
     }
 }
 

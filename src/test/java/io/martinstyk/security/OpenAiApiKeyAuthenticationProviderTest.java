@@ -26,7 +26,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
                 .header("OpenAI-Organization", "org-test")
                 .header("OpenAI-Project", "proj-test");
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
@@ -41,7 +41,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test")
                 .header("Authorization", "Bearer " + invalidApiKey);
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
@@ -51,7 +51,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
     void testMissingAuthorizationHeader() {
         HttpRequest<?> request = HttpRequest.GET("/test");
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
@@ -64,7 +64,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test")
                 .header("Authorization", validApiKey);
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
@@ -89,7 +89,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
                 .header("OpenAI-Organization", "org-custom")
                 .header("OpenAI-Project", "proj-custom");
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
@@ -107,7 +107,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test")
                 .header("Authorization", "Bearer " + validApiKey);
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
@@ -127,7 +127,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
                 .header("OpenAI-Organization", "test-org")
                 .header("OpenAI-Project", "test-proj");
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertTrue(result.isAuthenticated());
@@ -145,7 +145,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test")
                 .header("Authorization", "Bearer ");
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
@@ -158,7 +158,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test")
                 .header("Authorization", "Bearer " + tooShortApiKey);
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
@@ -171,7 +171,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test")
                 .header("Authorization", "Bearer " + tooLongApiKey);
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertFalse(result.isAuthenticated());
@@ -182,17 +182,7 @@ class OpenAiApiKeyAuthenticationProviderTest {
         HttpRequest<?> request = HttpRequest.GET("/test")
                 .header("Authorization", "Bearer   ");
 
-        AuthenticationResponse result = authProvider.authenticate((Object) request, null);
-        
-        assertNotNull(result);
-        assertFalse(result.isAuthenticated());
-    }
-
-    @Test
-    void testInvalidRequestType() {
-        String invalidRequest = "not-an-http-request";
-        
-        AuthenticationResponse result = authProvider.authenticate(invalidRequest, null);
+        AuthenticationResponse result = authProvider.authenticate(request, null);
         
         assertNotNull(result);
         assertFalse(result.isAuthenticated());

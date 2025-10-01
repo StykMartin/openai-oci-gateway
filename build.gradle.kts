@@ -25,6 +25,7 @@ dependencies {
     implementation("io.micronaut.security:micronaut-security")
     implementation("io.micronaut.security:micronaut-security-jwt")
     implementation("io.micronaut.validation:micronaut-validation")
+    implementation("io.micronaut:micronaut-management")
     implementation("io.projectreactor:reactor-core")
     compileOnly("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")

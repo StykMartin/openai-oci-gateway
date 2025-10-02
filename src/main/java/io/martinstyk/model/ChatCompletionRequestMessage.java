@@ -24,16 +24,36 @@ public abstract class ChatCompletionRequestMessage {
     @NotBlank(message = "Role cannot be blank")
     private String role;
 
-    protected ChatCompletionRequestMessage() {}
+    /**
+ * Protected no-argument constructor.
+ *
+ * Intended for use by subclasses and serialization/deserialization frameworks. 
+ */
+protected ChatCompletionRequestMessage() {}
 
+    /**
+     * Creates a ChatCompletionRequestMessage with the specified role.
+     *
+     * @param role the message role identifying the actor (e.g., "user", "system", "assistant", "developer"); must not be null or blank
+     */
     protected ChatCompletionRequestMessage(String role) {
         this.role = role;
     }
 
+    /**
+     * Retrieves the role of this chat completion request message.
+     *
+     * @return the role of the message, e.g. "user", "system", "assistant", or "developer"
+     */
     public String getRole() {
         return role;
     }
 
+    /**
+     * Sets the role of this chat completion request message.
+     *
+     * @param role the role name; must not be null or blank
+     */
     public void setRole(String role) {
         this.role = role;
     }

@@ -14,20 +14,38 @@ public class ChatCompletionRequestSystemMessage extends ChatCompletionRequestMes
     @NotBlank(message = "Content cannot be blank")
     private String content;
 
+    /**
+     * Create a chat completion message with the "system" role and the provided content.
+     *
+     * @param content the system message text; must not be null or blank
+     */
     @JsonCreator
     public ChatCompletionRequestSystemMessage(@JsonProperty("content") String content) {
         super("system");
         this.content = content;
     }
 
+    /**
+     * Constructs a ChatCompletionRequestSystemMessage with the role set to "system".
+     */
     public ChatCompletionRequestSystemMessage() {
         super("system");
     }
 
+    /**
+     * Retrieves the system message content.
+     *
+     * @return the system message content; when validated, it will be non-null and not blank
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     * Sets the system message content.
+     *
+     * @param content the message text; must be non-null and not blank
+     */
     public void setContent(String content) {
         this.content = content;
     }

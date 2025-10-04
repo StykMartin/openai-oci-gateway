@@ -27,6 +27,7 @@ dependencies {
     implementation("io.micronaut.validation:micronaut-validation")
     implementation("io.micronaut:micronaut-management")
     implementation("io.projectreactor:reactor-core")
+    implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-bmc-generativeaiinference")
 
     compileOnly("io.micronaut:micronaut-http-client")
 

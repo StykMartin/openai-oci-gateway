@@ -11,10 +11,10 @@ public class ChatDetailsConfiguration {
 
     @Singleton
     public ChatDetails chatDetails(
-            @NonNull ServingMode servingMode, @NonNull ChatProperties chatProperties) {
+            @NonNull ServingMode servingMode, @NonNull GenAiProperties genAiProperties) {
         return ChatDetails.builder()
                 .servingMode(servingMode)
-                .compartmentId(chatProperties.getCompartmentId())
+                .compartmentId(genAiProperties.getCompartmentId())
                 .build();
     }
 }

@@ -1,28 +1,40 @@
 package io.martinstyk.service;
 
-import io.martinstyk.config.GenAiProperties;
 import jakarta.inject.Singleton;
-import java.util.Map;
 
 @Singleton
 public class ModelResolverService {
-    private final GenAiProperties properties;
-
-    public ModelResolverService(GenAiProperties properties) {
-        this.properties = properties;
-    }
+    public static final String MODEL_PREFIX = "openai.";
 
     public String resolveModel(String inputModelName) {
-        Map<String, String> mapping = properties.getModelMapping();
-
-        if (mapping.containsKey(inputModelName)) {
-            return mapping.get(inputModelName);
+        if (inputModelName == null || inputModelName.trim().isEmpty()) {
+            throw new UnrecognizedModelException("Model name cannot be null or empty");
         }
 
-        if (mapping.containsValue(inputModelName)) {
+        if (inputModelName.startsWith(MODEL_PREFIX)) {
             return inputModelName;
         }
 
-        throw new UnrecognizedModelException("Unrecognized model name: " + inputModelName);
+        return MODEL_PREFIX + inputModelName;
+    }
+
+    public String resolveToOpenAiModel(String genaiModelName) {
+        if (genaiModelName == null || genaiModelName.trim().isEmpty()) {
+            throw new UnrecognizedModelException("Model name cannot be null or empty");
+        }
+
+        if (!genaiModelName.startsWith(MODEL_PREFIX)) {
+            throw new UnrecognizedModelException(
+                    "GenAI model name must start with '"
+                            + MODEL_PREFIX
+                            + "' prefix: "
+                            + genaiModelName);
+        }
+
+        String openAiModelName = genaiModelName.substring(MODEL_PREFIX.length()).trim();
+        if (openAiModelName.isEmpty()) {
+            throw new UnrecognizedModelException("Model name cannot be null or empty");
+        }
+        return openAiModelName;
     }
 }

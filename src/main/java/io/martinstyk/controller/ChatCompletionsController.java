@@ -22,10 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
-/**
- * Controller for handling chat completion requests. This is a gateway that proxies requests to the
- * actual AI service.
- */
 @Controller("/v1")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Validated
@@ -33,17 +29,6 @@ public class ChatCompletionsController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatCompletionsController.class);
 
-    /**
-     * Handles POST requests to create a chat completion for the specified model and messages.
-     *
-     * <p>Proxies the request to the configured AI completion service; currently returns a mock
-     * completion response.
-     *
-     * @param request the validated chat completion request containing model, messages, and other
-     *     options
-     * @return an HttpResponse containing the created CreateChatCompletionResponse on success, or a
-     *     server error response on failure
-     */
     @Post(value = "/chat/completions", consumes = MediaType.APPLICATION_JSON)
     public HttpResponse<CreateChatCompletionResponse> createChatCompletion(
             @Valid @Body CreateChatCompletionRequest request) {
@@ -52,7 +37,6 @@ public class ChatCompletionsController {
         logger.debug("Request details: {}", request);
 
         try {
-            // TODO: Implement actual proxy logic to forward request to AI service
             CreateChatCompletionResponse response = createMockResponse(request);
 
             logger.info("Chat completion request processed successfully");
@@ -64,13 +48,6 @@ public class ChatCompletionsController {
         }
     }
 
-    /**
-     * Provides a Server-Sent Events stream that delivers a mock chat-completion message.
-     *
-     * @param request the validated chat completion request payload
-     * @return a Publisher that emits a single Server-Sent Event containing a mock chat completion
-     *     string
-     */
     @Post(value = "/chat/completions", produces = MediaType.TEXT_EVENT_STREAM)
     public Publisher<Event<String>> createChatCompletionSse(
             @Valid @Body CreateChatCompletionRequest request) {
@@ -80,15 +57,6 @@ public class ChatCompletionsController {
         return Mono.just(Event.of("This is a SSE mock response from the gateway"));
     }
 
-    /**
-     * Builds a mock CreateChatCompletionResponse for the given request.
-     *
-     * @param request the incoming completion request whose model value is copied into the mock
-     *     response
-     * @return a CreateChatCompletionResponse containing an id, created timestamp, the request's
-     *     model, and a single choice whose message content is "This is a mock response from the
-     *     gateway"
-     */
     private CreateChatCompletionResponse createMockResponse(CreateChatCompletionRequest request) {
         ChatCompletionResponseMessage message = new ChatCompletionResponseMessage();
         message.setContent("This is a mock response from the gateway");

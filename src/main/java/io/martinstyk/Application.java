@@ -13,6 +13,7 @@ public class Application {
         @Override
         public void configure(@NonNull ApplicationContextBuilder builder) {
             builder.defaultEnvironments(Environment.DEVELOPMENT);
+            builder.eagerInitConfiguration(true);
         }
     }
 

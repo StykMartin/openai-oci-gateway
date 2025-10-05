@@ -1,5 +1,6 @@
 package io.martinstyk.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,7 +14,7 @@ public class CreateChatCompletionResponse {
     private String id;
 
     @NotNull(message = "Object cannot be null")
-    private String object = "chat.completion";
+    private ResponseObject object = ResponseObject.CHAT_COMPLETION;
 
     @NotNull(message = "Created timestamp cannot be null")
     private Long created;
@@ -25,6 +26,10 @@ public class CreateChatCompletionResponse {
     @NotEmpty(message = "Choices cannot be empty")
     @Valid
     private List<ChatCompletionChoice> choices;
+
+    @JsonProperty("usage")
+    @Valid
+    private Usage usage;
 
     public CreateChatCompletionResponse() {}
 
@@ -44,11 +49,11 @@ public class CreateChatCompletionResponse {
         this.id = id;
     }
 
-    public String getObject() {
+    public ResponseObject getObject() {
         return object;
     }
 
-    public void setObject(String object) {
+    public void setObject(ResponseObject object) {
         this.object = object;
     }
 
@@ -74,5 +79,13 @@ public class CreateChatCompletionResponse {
 
     public void setChoices(List<ChatCompletionChoice> choices) {
         this.choices = choices;
+    }
+
+    public Usage getUsage() {
+        return usage;
+    }
+
+    public void setUsage(Usage usage) {
+        this.usage = usage;
     }
 }

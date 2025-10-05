@@ -22,10 +22,20 @@ public abstract class ChatCompletionRequestMessage {
     @NotBlank(message = "Role cannot be blank")
     private String role;
 
+    @JsonProperty("content")
+    @NotNull(message = "Content cannot be null")
+    @NotBlank(message = "Content cannot be blank")
+    private String content;
+
     protected ChatCompletionRequestMessage() {}
 
     protected ChatCompletionRequestMessage(String role) {
         this.role = role;
+    }
+
+    protected ChatCompletionRequestMessage(String role, String content) {
+        this.role = role;
+        this.content = content;
     }
 
     public String getRole() {
@@ -34,5 +44,13 @@ public abstract class ChatCompletionRequestMessage {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

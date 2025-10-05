@@ -26,13 +26,14 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @Controller("/v1")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -191,7 +192,7 @@ public class ChatCompletionsController {
         logger.info("Received chat completion request for model: {}", request.getModel());
         logger.debug("Request details: {}", request);
 
-        return Mono.just(Event.of("This is a SSE mock response from the gateway"));
+        return Flux.interval(Duration.ofSeconds(1)).take(10).map(i -> Event.of("Chunk " + (i + 1)));
     }
 
     private CreateChatCompletionResponse createMockResponse(CreateChatCompletionRequest request) {

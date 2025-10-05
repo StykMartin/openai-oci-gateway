@@ -17,7 +17,7 @@ dependencies {
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
     annotationProcessor("io.micronaut.security:micronaut-security-annotations")
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
     implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-sdk")
     implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-oke-workload-identity")
@@ -31,7 +31,7 @@ dependencies {
     implementation("io.projectreactor:reactor-core")
     implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-bmc-generativeaiinference")
     implementation("io.micronaut.openapi:micronaut-openapi")
-    implementation("org.mapstruct:mapstruct:1.6.2")
+    implementation("org.mapstruct:mapstruct:1.6.3")
 
     compileOnly("io.micronaut:micronaut-http-client")
 

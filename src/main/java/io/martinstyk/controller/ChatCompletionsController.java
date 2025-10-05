@@ -13,6 +13,8 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.sse.Event;
+import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
@@ -109,6 +111,7 @@ public class ChatCompletionsController {
                   }
                 }
                 """)))
+    @ExecuteOn(TaskExecutors.BLOCKING)
     public HttpResponse<CreateChatCompletionResponse> createChatCompletion(
             @Valid @Body CreateChatCompletionRequest request) {
 
@@ -182,6 +185,7 @@ public class ChatCompletionsController {
                 data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1234567890,"model":"gpt-5","choices":[{"index":0,"delta":{"content":" there!"},"finish_reason":null}]}
 
                 """)))
+    @ExecuteOn(TaskExecutors.BLOCKING)
     public Publisher<Event<String>> createChatCompletionSse(
             @Valid @Body CreateChatCompletionRequest request) {
         logger.info("Received chat completion request for model: {}", request.getModel());

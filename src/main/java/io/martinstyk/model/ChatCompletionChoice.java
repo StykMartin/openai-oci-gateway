@@ -1,10 +1,12 @@
 package io.martinstyk.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Serdeable
 public class ChatCompletionChoice {
 
@@ -17,15 +19,30 @@ public class ChatCompletionChoice {
 
     @NotNull(message = "Finish reason cannot be null")
     @JsonProperty("finish_reason")
-    private String finishReason;
+    private FinishReason finishReason;
+
+    @JsonProperty("logprobs")
+    @Valid
+    private LogProbs logprobs;
 
     public ChatCompletionChoice() {}
 
     public ChatCompletionChoice(
-            Integer index, ChatCompletionResponseMessage message, String finishReason) {
+            Integer index, ChatCompletionResponseMessage message, FinishReason finishReason) {
         this.index = index;
         this.message = message;
         this.finishReason = finishReason;
+    }
+
+    public ChatCompletionChoice(
+            Integer index,
+            ChatCompletionResponseMessage message,
+            FinishReason finishReason,
+            LogProbs logprobs) {
+        this.index = index;
+        this.message = message;
+        this.finishReason = finishReason;
+        this.logprobs = logprobs;
     }
 
     public Integer getIndex() {
@@ -44,11 +61,19 @@ public class ChatCompletionChoice {
         this.message = message;
     }
 
-    public String getFinishReason() {
+    public FinishReason getFinishReason() {
         return finishReason;
     }
 
-    public void setFinishReason(String finishReason) {
+    public void setFinishReason(FinishReason finishReason) {
         this.finishReason = finishReason;
+    }
+
+    public LogProbs getLogprobs() {
+        return logprobs;
+    }
+
+    public void setLogprobs(LogProbs logprobs) {
+        this.logprobs = logprobs;
     }
 }

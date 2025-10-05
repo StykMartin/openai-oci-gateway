@@ -1,5 +1,6 @@
-package io.martinstyk.model;
+package io.martinstyk.model.message;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.serde.annotation.Serdeable;
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.NotNull;
 @Serdeable
 public abstract class ChatCompletionRequestMessage {
 
+    @JsonProperty("role")
     @NotNull(message = "Role cannot be null")
     @NotBlank(message = "Role cannot be blank")
     private String role;

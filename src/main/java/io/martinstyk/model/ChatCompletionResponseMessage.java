@@ -2,22 +2,32 @@ package io.martinstyk.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.serde.annotation.Serdeable;
+import jakarta.validation.constraints.NotNull;
 
 @Serdeable
 public class ChatCompletionResponseMessage {
 
+    @JsonProperty("role")
+    @NotNull(message = "Role cannot be null")
+    private String role;
+
+    @JsonProperty("content")
+    @NotNull(message = "Content cannot be null")
     private String content;
-    private String refusal;
-
-    @JsonProperty("tool_calls")
-    private Object toolCalls;
-
-    private Object annotations;
 
     public ChatCompletionResponseMessage() {}
 
-    public ChatCompletionResponseMessage(String content) {
+    public ChatCompletionResponseMessage(String role, String content) {
+        this.role = role;
         this.content = content;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getContent() {
@@ -26,29 +36,5 @@ public class ChatCompletionResponseMessage {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getRefusal() {
-        return refusal;
-    }
-
-    public void setRefusal(String refusal) {
-        this.refusal = refusal;
-    }
-
-    public Object getToolCalls() {
-        return toolCalls;
-    }
-
-    public void setToolCalls(Object toolCalls) {
-        this.toolCalls = toolCalls;
-    }
-
-    public Object getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(Object annotations) {
-        this.annotations = annotations;
     }
 }

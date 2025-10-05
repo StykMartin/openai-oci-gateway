@@ -1,4 +1,4 @@
-package io.martinstyk.model;
+package io.martinstyk.model.message;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,20 +7,21 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Serdeable
-public class ChatCompletionRequestDeveloperMessage extends ChatCompletionRequestMessage {
+public class ChatCompletionRequestAssistantMessage extends ChatCompletionRequestMessage {
 
+    @JsonProperty("content")
     @NotNull(message = "Content cannot be null")
     @NotBlank(message = "Content cannot be blank")
     private String content;
 
     @JsonCreator
-    public ChatCompletionRequestDeveloperMessage(@JsonProperty("content") String content) {
-        super("developer");
+    public ChatCompletionRequestAssistantMessage(@JsonProperty("content") String content) {
+        super("assistant");
         this.content = content;
     }
 
-    public ChatCompletionRequestDeveloperMessage() {
-        super("developer");
+    public ChatCompletionRequestAssistantMessage() {
+        super("assistant");
     }
 
     public String getContent() {

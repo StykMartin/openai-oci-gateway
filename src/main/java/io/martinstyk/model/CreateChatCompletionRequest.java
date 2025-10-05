@@ -72,6 +72,18 @@ public class CreateChatCompletionRequest {
     @Valid
     private StreamOptions streamOptions;
 
+    @JsonProperty("n")
+    @Schema(defaultValue = "1")
+    @Min(1)
+    private Integer n = 1;
+
+    @JsonProperty("stop")
+    private List<String> stop;
+
+    @JsonProperty("logprobs")
+    @Min(1)
+    private Integer logprobs;
+
     public CreateChatCompletionRequest() {}
 
     public CreateChatCompletionRequest(List<ChatCompletionRequestMessage> messages, String model) {
@@ -181,5 +193,29 @@ public class CreateChatCompletionRequest {
 
     public void setStreamOptions(StreamOptions streamOptions) {
         this.streamOptions = streamOptions;
+    }
+
+    public Integer getN() {
+        return n;
+    }
+
+    public void setN(Integer n) {
+        this.n = n;
+    }
+
+    public List<String> getStop() {
+        return stop;
+    }
+
+    public void setStop(List<String> stop) {
+        this.stop = stop;
+    }
+
+    public Integer getLogprobs() {
+        return logprobs;
+    }
+
+    public void setLogprobs(Integer logprobs) {
+        this.logprobs = logprobs;
     }
 }

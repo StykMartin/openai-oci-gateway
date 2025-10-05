@@ -20,6 +20,9 @@ public class FunctionTool extends Tool {
     @NotNull
     private Boolean strict = true;
 
+    @JsonProperty("description")
+    private String description;
+
     public FunctionTool() {
         super("function");
     }
@@ -28,11 +31,13 @@ public class FunctionTool extends Tool {
     public FunctionTool(
             @JsonProperty("name") String name,
             @JsonProperty("parameters") Object parameters,
-            @JsonProperty("strict") Boolean strict) {
+            @JsonProperty("strict") Boolean strict,
+            @JsonProperty("description") String description) {
         super("function");
         this.name = name;
         this.parameters = parameters;
         this.strict = (strict != null) ? strict : Boolean.TRUE;
+        this.description = description;
     }
 
     public boolean isStrict() {
@@ -57,5 +62,13 @@ public class FunctionTool extends Tool {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

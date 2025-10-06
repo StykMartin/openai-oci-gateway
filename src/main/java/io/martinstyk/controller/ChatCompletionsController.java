@@ -182,9 +182,11 @@ public class ChatCompletionsController {
                                             name = "SSE Response",
                                             value =
                                                     """
-                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1234567890,"model":"gpt-5","choices":[{"index":0,"delta":{"content":"Hello"},"finish_reason":null}]}
-                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1234567890,"model":"gpt-5","choices":[{"index":0,"delta":{"content":" there!"},"finish_reason":null}]}
-
+                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"role":"assistant","content":"","refusal":null},"finish_reason":null}],"obfuscation":"hG"}
+                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"content":"Hi"},"finish_reason":null}],"obfuscation":"6E"}
+                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"content":"."},"finish_reason":null}],"obfuscation":"5Yn"}
+                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"obfuscation":"o8xbNfSakTaUNF"}
+                data: [DONE]
                 """)))
     @ExecuteOn(TaskExecutors.BLOCKING)
     public Publisher<Event<String>> createChatCompletionSse(

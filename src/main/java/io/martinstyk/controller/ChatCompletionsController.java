@@ -1,12 +1,8 @@
 package io.martinstyk.controller;
 
-import io.martinstyk.model.ChatCompletionChoice;
-import io.martinstyk.model.ChatCompletionResponseMessage;
 import io.martinstyk.model.CreateChatCompletionRequest;
 import io.martinstyk.model.CreateChatCompletionResponse;
-import io.martinstyk.model.FinishReason;
-import io.martinstyk.model.ResponseObject;
-import io.martinstyk.model.Usage;
+import io.martinstyk.service.ChatCompletion;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -26,14 +22,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Flux;
 
 @Controller("/v1")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -43,11 +34,21 @@ public class ChatCompletionsController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatCompletionsController.class);
 
-    @Post(value = "/chat/completions", consumes = MediaType.APPLICATION_JSON)
+    private final ChatCompletion chatCompletion;
+
+    public ChatCompletionsController(ChatCompletion chatCompletion) {
+        this.chatCompletion = chatCompletion;
+    }
+
+    @Post(
+            value = "/chat/completions",
+            consumes = MediaType.APPLICATION_JSON,
+            produces = {MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM})
     @Operation(
             summary = "Create chat completion",
             description =
-                    "Creates a completion for the provided chat conversation. Compatible with OpenAI Chat Completions API format.",
+                    "Creates a completion for the provided chat conversation. Compatible with OpenAI Chat Completions API format. "
+                            + "Supports both streaming (with stream=true) and non-streaming responses.",
             requestBody =
                     @RequestBody(
                             description = "Chat completion request",
@@ -59,11 +60,11 @@ public class ChatCompletionsController {
                                                             implementation =
                                                                     CreateChatCompletionRequest
                                                                             .class),
-                                            examples =
-                                                    @ExampleObject(
-                                                            name = "Example Request",
-                                                            value =
-                                                                    """
+                                            examples = {
+                                                @ExampleObject(
+                                                        name = "Non-Streaming Request",
+                                                        value =
+                                                                """
                     {
                       "model": "gpt-5",
                       "messages": [
@@ -77,19 +78,39 @@ public class ChatCompletionsController {
                         }
                       ]
                     }
-                    """))))
+                    """),
+                                                @ExampleObject(
+                                                        name = "Streaming Request",
+                                                        value =
+                                                                """
+                    {
+                      "model": "gpt-5",
+                      "stream": true,
+                      "messages": [
+                        {
+                          "role": "developer",
+                          "content": "You are a helpful assistant."
+                        },
+                        {
+                          "role": "user",
+                          "content": "Hello!"
+                        }
+                      ]
+                    }
+                    """)
+                                            })))
     @ApiResponse(
             responseCode = "200",
-            description = "Successful chat completion",
-            content =
-                    @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = CreateChatCompletionResponse.class),
-                            examples =
-                                    @ExampleObject(
-                                            name = "Example Response",
-                                            value =
-                                                    """
+            description = "Successful chat completion (format depends on stream parameter)",
+            content = {
+                @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = CreateChatCompletionResponse.class),
+                        examples =
+                                @ExampleObject(
+                                        name = "Non-Streaming Response",
+                                        value =
+                                                """
                 {
                   "id": "chatcmpl-abc123",
                   "object": "chat.completion",
@@ -111,115 +132,40 @@ public class ChatCompletionsController {
                     "total_tokens": 15
                   }
                 }
-                """)))
-    @ExecuteOn(TaskExecutors.BLOCKING)
-    public HttpResponse<CreateChatCompletionResponse> createChatCompletion(
-            @Valid @Body CreateChatCompletionRequest request) {
-
-        logger.info("Received chat completion request for model: {}", request.getModel());
-        logger.debug("Request details: {}", request);
-
-        try {
-            CreateChatCompletionResponse response = createMockResponse(request);
-
-            logger.info("Chat completion request processed successfully");
-            return HttpResponse.ok(response);
-
-        } catch (Exception e) {
-            logger.error("Error processing chat completion request", e);
-            return HttpResponse.serverError();
-        }
-    }
-
-    @Post(
-            value = "/chat/completions",
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.TEXT_EVENT_STREAM)
-    @Operation(
-            hidden = true,
-            summary = "Create streaming chat completion",
-            description =
-                    "Creates a streaming completion using Server-Sent Events (SSE). Compatible with OpenAI streaming format.",
-            requestBody =
-                    @RequestBody(
-                            description = "Chat completion request with stream=true",
-                            content =
-                                    @Content(
-                                            mediaType = "application/json",
-                                            schema =
-                                                    @Schema(
-                                                            implementation =
-                                                                    CreateChatCompletionRequest
-                                                                            .class),
-                                            examples =
-                                                    @ExampleObject(
-                                                            name = "Streaming Request",
-                                                            value =
-                                                                    """
-                    {
-                      "model": "gpt-5",
-                      "stream": true,
-                      "messages": [
-                        {
-                          "role": "developer",
-                          "content": "You are a helpful assistant."
-                        },
-                        {
-                          "role": "user",
-                          "content": "Hello!"
-                        }
-                      ]
-                    }
-                    """))))
-    @ApiResponse(
-            responseCode = "200",
-            description = "Streaming chat completion via SSE",
-            content =
-                    @Content(
-                            mediaType = "text/event-stream",
-                            examples =
-                                    @ExampleObject(
-                                            name = "SSE Response",
-                                            value =
-                                                    """
+                """)),
+                @Content(
+                        mediaType = "text/event-stream",
+                        examples =
+                                @ExampleObject(
+                                        name = "Streaming Response",
+                                        value =
+                                                """
                 data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"role":"assistant","content":"","refusal":null},"finish_reason":null}],"obfuscation":"hG"}
                 data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"content":"Hi"},"finish_reason":null}],"obfuscation":"6E"}
                 data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"content":"."},"finish_reason":null}],"obfuscation":"5Yn"}
                 data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1759737038,"model":"gpt-5-nano-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"obfuscation":"o8xbNfSakTaUNF"}
                 data: [DONE]
-                """)))
+                """))
+            })
     @ExecuteOn(TaskExecutors.BLOCKING)
-    public Publisher<Event<String>> createChatCompletionSse(
-            @Valid @Body CreateChatCompletionRequest request) {
-        logger.info("Received chat completion request for model: {}", request.getModel());
+    public HttpResponse<?> createChatCompletion(@Valid @Body CreateChatCompletionRequest request) {
+
+        logger.info(
+                "Received chat completion request for model: {} (stream={})",
+                request.getModel(),
+                request.getStream());
         logger.debug("Request details: {}", request);
 
-        return Flux.interval(Duration.ofSeconds(1)).take(10).map(i -> Event.of("Chunk " + (i + 1)));
-    }
-
-    private CreateChatCompletionResponse createMockResponse(CreateChatCompletionRequest request) {
-        ChatCompletionResponseMessage message = new ChatCompletionResponseMessage();
-        message.setRole("assistant");
-        message.setContent("This is a mock response from the gateway");
-
-        ChatCompletionChoice choice = new ChatCompletionChoice();
-        choice.setIndex(0);
-        choice.setMessage(message);
-        choice.setFinishReason(FinishReason.STOP);
-
-        CreateChatCompletionResponse response = new CreateChatCompletionResponse();
-        response.setId("chatcmpl-" + UUID.randomUUID().toString().substring(0, 8));
-        response.setObject(ResponseObject.CHAT_COMPLETION);
-        response.setCreated(Instant.now().getEpochSecond());
-        response.setModel(request.getModel());
-        response.setChoices(List.of(choice));
-
-        Usage usage = new Usage();
-        usage.setPromptTokens(10);
-        usage.setCompletionTokens(5);
-        usage.setTotalTokens(15);
-        response.setUsage(usage);
-
-        return response;
+        if (Boolean.TRUE.equals(request.getStream())) {
+            logger.info("Processing streaming chat completion request");
+            Publisher<Event<String>> stream =
+                    chatCompletion.processStreamingChatCompletion(request);
+            return HttpResponse.ok(stream).contentType(MediaType.TEXT_EVENT_STREAM_TYPE);
+        } else {
+            logger.info("Processing non-streaming chat completion request");
+            CreateChatCompletionResponse response = chatCompletion.processChatCompletion(request);
+            logger.info("Chat completion request processed successfully");
+            return HttpResponse.ok(response).contentType(MediaType.APPLICATION_JSON_TYPE);
+        }
     }
 }

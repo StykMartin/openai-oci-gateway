@@ -5,7 +5,6 @@ plugins {
     id("com.diffplug.spotless") version "8.0.0"
 }
 
-version = "0.1"
 group = "io.martinstyk"
 
 repositories {

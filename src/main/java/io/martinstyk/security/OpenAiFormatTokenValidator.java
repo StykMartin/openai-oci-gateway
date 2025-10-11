@@ -13,8 +13,11 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 @Singleton
-public class OpenAiTokenValidator<T> implements TokenValidator<T> {
-    private static final Pattern TOKEN_PATTERN = Pattern.compile("^sk-[a-zA-Z0-9]{48}$");
+public class OpenAiFormatTokenValidator<T> implements TokenValidator<T> {
+    private static final Pattern LEGACY_TOKEN_PATTERN = Pattern.compile("^sk-[a-zA-Z0-9]{48}$");
+
+    private static final Pattern NEW_TOKEN_PATTERN =
+            Pattern.compile("^sk-(proj|svcacct)-[a-zA-Z0-9_-]{40,200}$");
 
     @Override
     public @NonNull Publisher<Authentication> validateToken(
@@ -61,10 +64,10 @@ public class OpenAiTokenValidator<T> implements TokenValidator<T> {
             return false;
         }
 
-        if (apiKey.length() != 51) {
-            return false;
+        if (apiKey.length() == 51 && LEGACY_TOKEN_PATTERN.matcher(apiKey).matches()) {
+            return true;
         }
 
-        return TOKEN_PATTERN.matcher(apiKey).matches();
+        return NEW_TOKEN_PATTERN.matcher(apiKey).matches();
     }
 }

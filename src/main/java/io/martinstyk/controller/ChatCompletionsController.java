@@ -1,12 +1,8 @@
 package io.martinstyk.controller;
 
-import io.martinstyk.model.ChatCompletionChoice;
-import io.martinstyk.model.ChatCompletionResponseMessage;
 import io.martinstyk.model.CreateChatCompletionRequest;
 import io.martinstyk.model.CreateChatCompletionResponse;
-import io.martinstyk.model.FinishReason;
-import io.martinstyk.model.ResponseObject;
-import io.martinstyk.model.Usage;
+import io.martinstyk.service.ChatCompletion;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -26,14 +22,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Flux;
 
 @Controller("/v1")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -43,7 +34,16 @@ public class ChatCompletionsController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatCompletionsController.class);
 
-    @Post(value = "/chat/completions", consumes = MediaType.APPLICATION_JSON)
+    private final ChatCompletion chatCompletion;
+
+    public ChatCompletionsController(ChatCompletion chatCompletion) {
+        this.chatCompletion = chatCompletion;
+    }
+
+    @Post(
+            value = "/chat/completions",
+            consumes = MediaType.APPLICATION_JSON,
+            produces = {MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM})
     @Operation(
             summary = "Create chat completion",
             description =
@@ -158,76 +158,14 @@ public class ChatCompletionsController {
 
         if (Boolean.TRUE.equals(request.getStream())) {
             logger.info("Processing streaming chat completion request");
-            Publisher<Event<String>> stream = createMockStreamingResponse(request);
+            Publisher<Event<String>> stream =
+                    chatCompletion.processStreamingChatCompletion(request);
             return HttpResponse.ok(stream).contentType(MediaType.TEXT_EVENT_STREAM_TYPE);
         } else {
             logger.info("Processing non-streaming chat completion request");
-            CreateChatCompletionResponse response = createMockResponse(request);
+            CreateChatCompletionResponse response = chatCompletion.processChatCompletion(request);
             logger.info("Chat completion request processed successfully");
             return HttpResponse.ok(response).contentType(MediaType.APPLICATION_JSON_TYPE);
         }
-    }
-
-    private Publisher<Event<String>> createMockStreamingResponse(CreateChatCompletionRequest request) {
-        CreateChatCompletionResponse mockResponse = createMockResponse(request);
-        String content = "";
-        if (mockResponse.getChoices() != null && !mockResponse.getChoices().isEmpty()) {
-            ChatCompletionChoice choice = mockResponse.getChoices().getFirst();
-            if (choice.getMessage() != null && choice.getMessage().getContent() != null) {
-                content = choice.getMessage().getContent();
-            }
-        }
-        List<String> chunks = getChunks(content);
-        Flux<Event<String>> chunkFlux = Flux
-                .fromIterable(chunks)
-                .delayElements(Duration.ofMillis(500))
-                .map(Event::of);
-
-        Flux<Event<String>> doneFlux = Flux.just(Event.of("[DONE]"));
-        return Flux.concat(chunkFlux, doneFlux);
-    }
-
-    private static List<String> getChunks(String content) {
-        String[] words = content.split(" ");
-        List<String> chunks = new java.util.ArrayList<>();
-        StringBuilder chunkBuilder = new StringBuilder();
-        for (String word : words) {
-            if (!chunkBuilder.isEmpty()) {
-                chunkBuilder.append(" ");
-            }
-            chunkBuilder.append(word);
-            chunks.add(chunkBuilder.toString());
-            chunkBuilder.setLength(0);
-        }
-        if (!chunkBuilder.isEmpty()) {
-            chunks.add(chunkBuilder.toString());
-        }
-        return chunks;
-    }
-
-    private CreateChatCompletionResponse createMockResponse(CreateChatCompletionRequest request) {
-        ChatCompletionResponseMessage message = new ChatCompletionResponseMessage();
-        message.setRole("assistant");
-        message.setContent("This is a mock response from the gateway");
-
-        ChatCompletionChoice choice = new ChatCompletionChoice();
-        choice.setIndex(0);
-        choice.setMessage(message);
-        choice.setFinishReason(FinishReason.STOP);
-
-        CreateChatCompletionResponse response = new CreateChatCompletionResponse();
-        response.setId("chatcmpl-" + UUID.randomUUID().toString().substring(0, 8));
-        response.setObject(ResponseObject.CHAT_COMPLETION);
-        response.setCreated(Instant.now().getEpochSecond());
-        response.setModel(request.getModel());
-        response.setChoices(List.of(choice));
-
-        Usage usage = new Usage();
-        usage.setPromptTokens(10);
-        usage.setCompletionTokens(5);
-        usage.setTotalTokens(15);
-        response.setUsage(usage);
-
-        return response;
     }
 }

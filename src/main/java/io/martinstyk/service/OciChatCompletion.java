@@ -7,18 +7,20 @@ import com.oracle.bmc.generativeaiinference.requests.ChatRequest;
 import io.martinstyk.mapper.ChatCompletionMapper;
 import io.martinstyk.model.CreateChatCompletionRequest;
 import io.martinstyk.model.CreateChatCompletionResponse;
+import io.micronaut.http.sse.Event;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OciGenAiService {
+public class OciChatCompletion implements ChatCompletion {
 
-    private static final Logger logger = LoggerFactory.getLogger(OciGenAiService.class);
+    private static final Logger logger = LoggerFactory.getLogger(OciChatCompletion.class);
 
     private final GenerativeAiInferenceClient client;
     private final ChatDetails chatDetails;
     private final ChatCompletionMapper chatCompletionMapper;
 
-    public OciGenAiService(
+    public OciChatCompletion(
             GenerativeAiInferenceClient generativeAiInferenceClient,
             ChatDetails chatDetails,
             ChatCompletionMapper chatCompletionMapper) {
@@ -27,9 +29,12 @@ public class OciGenAiService {
         this.chatCompletionMapper = chatCompletionMapper;
     }
 
+    @Override
     public CreateChatCompletionResponse processChatCompletion(
             CreateChatCompletionRequest openAiRequest) {
-        logger.info("Processing chat completion request for model: {}", openAiRequest.getModel());
+        logger.info(
+                "Processing OCI GenAI chat completion request for model: {}",
+                openAiRequest.getModel());
 
         GenericChatRequest genericChatRequest =
                 chatCompletionMapper.toGenericChatRequest(openAiRequest);
@@ -44,5 +49,16 @@ public class OciGenAiService {
         client.chat(chatRequestBuilder.build());
 
         throw new UnsupportedOperationException("Chat completion processing not yet implemented");
+    }
+
+    @Override
+    public Publisher<Event<String>> processStreamingChatCompletion(
+            CreateChatCompletionRequest request) {
+        logger.info(
+                "Processing OCI GenAI streaming chat completion request for model: {}",
+                request.getModel());
+
+        throw new UnsupportedOperationException(
+                "Streaming chat completion processing not yet implemented");
     }
 }

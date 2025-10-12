@@ -51,8 +51,8 @@ application {
     mainClass = "io.martinstyk.Application"
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("21")
-    targetCompatibility = JavaVersion.toVersion("21")
+    sourceCompatibility = JavaVersion.toVersion("25")
+    targetCompatibility = JavaVersion.toVersion("25")
 }
 
 graalvmNative.toolchainDetection = false
@@ -78,8 +78,8 @@ micronaut {
     }
 }
 
-tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
-    jdkVersion = "21"
+tasks.named<io.micronaut.gradle.docker.MicronautDockerfile>("dockerfile") {
+    baseImage = "eclipse-temurin:25-jre"
 }
 
 spotless {

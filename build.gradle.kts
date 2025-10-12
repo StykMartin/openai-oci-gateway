@@ -112,4 +112,6 @@ tasks.test {
         showExceptions = true
         showStackTraces = true
     }
+
+    systemProperty("micronaut.environments", "test")
 }

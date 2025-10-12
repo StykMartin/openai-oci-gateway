@@ -42,6 +42,7 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+    testImplementation("com.openai:openai-java:4.3.0")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

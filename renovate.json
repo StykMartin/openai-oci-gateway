@@ -1,6 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+  "schedule": ["every 2 weeks on monday"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "All minor and patch updates"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "groupName": "All major updates"
+    }
   ]
 }

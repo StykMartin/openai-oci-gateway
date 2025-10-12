@@ -12,40 +12,39 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class ModelResolverServiceTest {
-    private ModelResolverService modelResolverService;
+    private ModelResolver modelResolver;
 
     @BeforeEach
     void setUp() {
-        modelResolverService = new ModelResolverService();
+        modelResolver = new ModelResolver();
     }
 
     @Test
     void testResolveOpenAiModelWithPrefix() {
-        String result = modelResolverService.resolveModel("gpt-4");
-        assertEquals(ModelResolverService.MODEL_PREFIX + "gpt-4", result);
+        String result = modelResolver.resolveModel("gpt-4");
+        assertEquals(ModelResolver.MODEL_PREFIX + "gpt-4", result);
     }
 
     @Test
     void testResolveModelAlreadyWithPrefix() {
-        String result =
-                modelResolverService.resolveModel(ModelResolverService.MODEL_PREFIX + "gpt-4");
-        assertEquals(ModelResolverService.MODEL_PREFIX + "gpt-4", result);
+        String result = modelResolver.resolveModel(ModelResolver.MODEL_PREFIX + "gpt-4");
+        assertEquals(ModelResolver.MODEL_PREFIX + "gpt-4", result);
     }
 
     @Test
     void testResolveVariousModelNames() {
         assertEquals(
-                ModelResolverService.MODEL_PREFIX + "gpt-3.5-turbo",
-                modelResolverService.resolveModel("gpt-3.5-turbo"));
+                ModelResolver.MODEL_PREFIX + "gpt-3.5-turbo",
+                modelResolver.resolveModel("gpt-3.5-turbo"));
         assertEquals(
-                ModelResolverService.MODEL_PREFIX + "gpt-4-turbo",
-                modelResolverService.resolveModel("gpt-4-turbo"));
+                ModelResolver.MODEL_PREFIX + "gpt-4-turbo",
+                modelResolver.resolveModel("gpt-4-turbo"));
         assertEquals(
-                ModelResolverService.MODEL_PREFIX + "text-davinci-003",
-                modelResolverService.resolveModel("text-davinci-003"));
+                ModelResolver.MODEL_PREFIX + "text-davinci-003",
+                modelResolver.resolveModel("text-davinci-003"));
         assertEquals(
-                ModelResolverService.MODEL_PREFIX + "model-with-dashes_and.underscores",
-                modelResolverService.resolveModel("model-with-dashes_and.underscores"));
+                ModelResolver.MODEL_PREFIX + "model-with-dashes_and.underscores",
+                modelResolver.resolveModel("model-with-dashes_and.underscores"));
     }
 
     @ParameterizedTest
@@ -55,7 +54,7 @@ class ModelResolverServiceTest {
         UnrecognizedModelException thrown =
                 assertThrows(
                         UnrecognizedModelException.class,
-                        () -> modelResolverService.resolveModel(inputModel),
+                        () -> modelResolver.resolveModel(inputModel),
                         "Expected resolveModel() to throw for " + testDescription);
 
         assertTrue(thrown.getMessage().contains(expectedMessageContent));
@@ -72,61 +71,49 @@ class ModelResolverServiceTest {
     void testVeryLongModelNames() {
         String longModelName =
                 "very-long-model-name-with-many-characters-that-should-still-work-properly";
-        String result = modelResolverService.resolveModel(longModelName);
-        assertEquals(ModelResolverService.MODEL_PREFIX + longModelName, result);
+        String result = modelResolver.resolveModel(longModelName);
+        assertEquals(ModelResolver.MODEL_PREFIX + longModelName, result);
     }
 
     @Test
     void testCaseSensitiveModelNames() {
+        assertEquals(ModelResolver.MODEL_PREFIX + "GPT-4", modelResolver.resolveModel("GPT-4"));
+        assertEquals(ModelResolver.MODEL_PREFIX + "gpt-4", modelResolver.resolveModel("gpt-4"));
         assertEquals(
-                ModelResolverService.MODEL_PREFIX + "GPT-4",
-                modelResolverService.resolveModel("GPT-4"));
-        assertEquals(
-                ModelResolverService.MODEL_PREFIX + "gpt-4",
-                modelResolverService.resolveModel("gpt-4"));
-        assertEquals(
-                ModelResolverService.MODEL_PREFIX + "OpenAI-GPT",
-                modelResolverService.resolveModel("OpenAI-GPT"));
+                ModelResolver.MODEL_PREFIX + "OpenAI-GPT",
+                modelResolver.resolveModel("OpenAI-GPT"));
     }
 
     @Test
     void testResolveToOpenAiModel() {
         assertEquals(
-                "gpt-4",
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + "gpt-4"));
+                "gpt-4", modelResolver.resolveToOpenAiModel(ModelResolver.MODEL_PREFIX + "gpt-4"));
         assertEquals(
                 "gpt-3.5-turbo",
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + "gpt-3.5-turbo"));
+                modelResolver.resolveToOpenAiModel(ModelResolver.MODEL_PREFIX + "gpt-3.5-turbo"));
         assertEquals(
                 "text-davinci-003",
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + "text-davinci-003"));
+                modelResolver.resolveToOpenAiModel(
+                        ModelResolver.MODEL_PREFIX + "text-davinci-003"));
     }
 
     @Test
     void testResolveToOpenAiModelWithSpecialCharacters() {
         assertEquals(
                 "model-with-dashes_and.underscores",
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + "model-with-dashes_and.underscores"));
+                modelResolver.resolveToOpenAiModel(
+                        ModelResolver.MODEL_PREFIX + "model-with-dashes_and.underscores"));
     }
 
     @Test
     void testResolveToOpenAiModelCaseSensitive() {
         assertEquals(
-                "GPT-4",
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + "GPT-4"));
+                "GPT-4", modelResolver.resolveToOpenAiModel(ModelResolver.MODEL_PREFIX + "GPT-4"));
         assertEquals(
-                "gpt-4",
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + "gpt-4"));
+                "gpt-4", modelResolver.resolveToOpenAiModel(ModelResolver.MODEL_PREFIX + "gpt-4"));
         assertEquals(
                 "OpenAI-GPT",
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + "OpenAI-GPT"));
+                modelResolver.resolveToOpenAiModel(ModelResolver.MODEL_PREFIX + "OpenAI-GPT"));
     }
 
     @Test
@@ -135,8 +122,7 @@ class ModelResolverServiceTest {
                 "very-long-model-name-with-many-characters-that-should-still-work-properly";
         assertEquals(
                 longModelName,
-                modelResolverService.resolveToOpenAiModel(
-                        ModelResolverService.MODEL_PREFIX + longModelName));
+                modelResolver.resolveToOpenAiModel(ModelResolver.MODEL_PREFIX + longModelName));
     }
 
     @Test
@@ -145,7 +131,7 @@ class ModelResolverServiceTest {
         UnrecognizedModelException thrown =
                 assertThrows(
                         UnrecognizedModelException.class,
-                        () -> modelResolverService.resolveToOpenAiModel(emptyModelName),
+                        () -> modelResolver.resolveToOpenAiModel(emptyModelName),
                         "Expected resolveToOpenAiModel() to throw for " + emptyModelName);
         assertTrue(thrown.getMessage().contains("Model name cannot be null or empty"));
     }
@@ -157,7 +143,7 @@ class ModelResolverServiceTest {
         UnrecognizedModelException thrown =
                 assertThrows(
                         UnrecognizedModelException.class,
-                        () -> modelResolverService.resolveToOpenAiModel(inputModel),
+                        () -> modelResolver.resolveToOpenAiModel(inputModel),
                         "Expected resolveToOpenAiModel() to throw for " + testDescription);
 
         assertTrue(thrown.getMessage().contains(expectedMessageContent));
@@ -171,13 +157,13 @@ class ModelResolverServiceTest {
                 Arguments.of(
                         "gpt-4",
                         "GenAI model name must start with '"
-                                + ModelResolverService.MODEL_PREFIX
+                                + ModelResolver.MODEL_PREFIX
                                 + "' prefix",
                         "missing prefix"),
                 Arguments.of(
                         "cohere.command-r-plus",
                         "GenAI model name must start with '"
-                                + ModelResolverService.MODEL_PREFIX
+                                + ModelResolver.MODEL_PREFIX
                                 + "' prefix",
                         "wrong prefix"));
     }

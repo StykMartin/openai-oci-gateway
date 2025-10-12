@@ -3,7 +3,7 @@ package io.martinstyk.service;
 import jakarta.inject.Singleton;
 
 @Singleton
-public class ModelResolverService {
+public class ModelResolver {
     public static final String MODEL_PREFIX = "openai.";
 
     public String resolveModel(String inputModelName) {

@@ -1,8 +1,8 @@
 plugins {
-    id("io.micronaut.application") version "4.5.5"
-    id("com.gradleup.shadow") version "8.3.9"
-    id("io.micronaut.aot") version "4.5.5"
-    id("com.diffplug.spotless") version "8.0.0"
+    alias(libs.plugins.micronaut.application)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.micronaut.aot)
+    alias(libs.plugins.spotless)
 }
 
 group = "io.martinstyk"
@@ -12,40 +12,42 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor("io.micronaut:micronaut-http-validation")
-    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
-    annotationProcessor("io.micronaut.security:micronaut-security-annotations")
-    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    annotationProcessor(libs.micronaut.http.validation)
+    annotationProcessor(libs.micronaut.serde.processor)
+    annotationProcessor(libs.micronaut.security.annotations)
+    annotationProcessor(libs.micronaut.openapi.annotations)
+    annotationProcessor(libs.mapstruct.processor)
 
-    implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-sdk")
-    implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-oke-workload-identity")
-    implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-httpclient-netty")
-    implementation("io.micronaut.serde:micronaut-serde-jackson")
-    implementation("io.micronaut.security:micronaut-security")
-    implementation("io.micronaut.security:micronaut-security-jwt")
-    implementation("io.micronaut.validation:micronaut-validation")
-    implementation("io.micronaut:micronaut-management")
-    implementation("io.projectreactor:reactor-core")
-    implementation("io.micronaut.oraclecloud:micronaut-oraclecloud-bmc-generativeaiinference")
-    implementation("io.micronaut.openapi:micronaut-openapi")
-    implementation("org.mapstruct:mapstruct:1.6.3")
+    implementation(platform("com.oracle.oci.sdk:oci-java-sdk-bom:3.74.2"))
 
-    compileOnly("io.micronaut:micronaut-http-client")
+    implementation(libs.micronaut.oraclecloud.oke.workload.identity)
+    implementation(libs.micronaut.oraclecloud.httpclient.netty)
+    implementation(libs.micronaut.oraclecloud.sdk)
+    implementation(libs.micronaut.serde.jackson)
+    implementation(libs.micronaut.security)
+    implementation(libs.micronaut.security.jwt)
+    implementation(libs.micronaut.validation)
+    implementation(libs.micronaut.management)
+    implementation(libs.reactor)
+    implementation(libs.micronaut.oraclecloud.bmc.generativeaiinference)
+    implementation(libs.micronaut.openapi)
+    implementation(libs.mapstruct)
 
-    runtimeOnly("ch.qos.logback:logback-classic")
+    compileOnly(libs.micronaut.http.client)
 
-    testImplementation("io.micronaut:micronaut-http-client")
-    testImplementation(platform("org.junit:junit-bom:6.0.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testImplementation("org.junit.jupiter:junit-jupiter-params")
-    testImplementation("io.projectreactor:reactor-test")
-    testImplementation("io.micronaut.test:micronaut-test-junit5")
-    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
-    testImplementation("com.openai:openai-java:4.3.0")
+    runtimeOnly(libs.logback.classic)
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(libs.micronaut.http.client)
+    testImplementation(platform(libs.boms.junit))
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.reactor.test)
+    testImplementation(libs.micronaut.test.junit5)
+    testImplementation(libs.micronaut.test.rest.assured)
+    testImplementation(libs.openai.java)
+
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 application {
@@ -54,6 +56,9 @@ application {
 java {
     sourceCompatibility = JavaVersion.toVersion("25")
     targetCompatibility = JavaVersion.toVersion("25")
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 graalvmNative.toolchainDetection = false

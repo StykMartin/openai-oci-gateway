@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@6a96db5a3f33ee3428706da0bfc3de5c5a8f698c
+        uses: gradle/actions/setup-gradle@a009669cd5ded58aeceb80a10a7b8697138f01d0
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
@@ -77,7 +77,7 @@ jobs:
           distribution: 'temurin'
           
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@6a96db5a3f33ee3428706da0bfc3de5c5a8f698c
+        uses: gradle/actions/setup-gradle@a009669cd5ded58aeceb80a10a7b8697138f01d0
         
       - name: Build with Gradle Wrapper
         run: ./gradlew build

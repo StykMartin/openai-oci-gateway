@@ -1,7 +1,7 @@
 plugins {
-    id("io.micronaut.application") version "4.6.1"
-    id("com.gradleup.shadow") version "8.3.9"
-    id("io.micronaut.aot") version "4.6.1"
+    id("io.micronaut.application") version "5.0.2"
+    id("com.gradleup.shadow") version "9.6.1"
+    id("io.micronaut.aot") version "5.0.2"
     id("com.diffplug.spotless") version "8.0.0"
 }
 

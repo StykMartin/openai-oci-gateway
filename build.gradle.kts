@@ -1,8 +1,8 @@
 plugins {
-    id("io.micronaut.application") version "4.6.1"
-    id("com.gradleup.shadow") version "8.3.9"
-    id("io.micronaut.aot") version "4.6.1"
-    id("com.diffplug.spotless") version "8.0.0"
+    id("io.micronaut.application") version "4.6.2"
+    id("com.gradleup.shadow") version "8.3.11"
+    id("io.micronaut.aot") version "4.6.2"
+    id("com.diffplug.spotless") version "8.10.2"
 }
 
 group = "io.martinstyk"
@@ -36,13 +36,13 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
 
     testImplementation("io.micronaut:micronaut-http-client")
-    testImplementation(platform("org.junit:junit-bom:6.0.1"))
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
-    testImplementation("com.openai:openai-java:4.6.1")
+    testImplementation("com.openai:openai-java:4.63.1")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
